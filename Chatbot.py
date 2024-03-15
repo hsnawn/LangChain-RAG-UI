@@ -15,17 +15,20 @@ class ShippingAssistant:
         self.path_to_docx = path_to_docx
         self.loader = Docx2txtLoader(path_to_docx)
         self.docs = self.loader.load()
-        self.docs = filter_complex_metadata(self.docs)
+        #self.docs = filter_complex_metadata(self.docs)
         self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
         self.splits = self.text_splitter.split_documents(self.docs)
         self.vectorstore = Chroma.from_documents(documents=self.splits, embedding=OpenAIEmbeddings())
-        self.retriever = self.vectorstore.as_retriever()
-        self.mem = ""
+        
+        self.mem = "Assistant: Hello, I am ALGO VENTURE. I am here to help you."
 
-    def ask_query(self, query):
+    def ask_query(self, query, hist):
+        retriever = self.vectorstore.similarity_search(query)
+        merged_content = "\n".join([doc.page_content for doc in retriever[:2]])
+        # print(merged_content)
         # self.mem = f"Assistant: Hello {carrier_name}, We’re pleased to inform you that you are the winning bidder on {shipment_id} from {departure_city} to {destination_city} picking etc etc"
         rag_template = """
-        You are a shipping assistant for question-answering tasks. Use the following pieces of context to answer the question. If you don't know the answer, just refuse to answer it.and reply to greetings. Use three sentences maximum and keep the answer concise.
+        You are ALGO VENTURE assistant. Use the following pieces of context to answer the question. If you don't know the answer, just refuse to answer it.and reply to greetings. Use three sentences maximum and keep the answer concise.
         CONTEXT:
         ```
             {docs}
@@ -41,7 +44,7 @@ class ShippingAssistant:
         ANSWER:
         """
         prompt = PromptTemplate(
-            partial_variables={"history": self.mem, "docs": self.retriever},
+            partial_variables={"history": hist, "docs": merged_content},
             input_variables=["query"],
             template=rag_template,
         )
@@ -49,10 +52,10 @@ class ShippingAssistant:
         rag_chain = prompt | llm | StrOutputParser()
 
         resp = rag_chain.invoke({"query": f"{query}"})
-        self.mem += f"\nUser: {query}"
-        self.mem += f"\nAssistant: {resp}"
+        # hist = self.mem + f"\nUser: {query}"
+        # hist += f"\nAssistant: {resp}"
 
-        print(self.mem)
+        # print(hist)
         return resp
     
     
@@ -67,10 +70,13 @@ st.title("ALGO VENTURE Assistant")
 #     name = st.text_input("Your Name", key="name", type="default")
 #     company_name = st.text_input("Company Name", key="company", type="default")
 
-initial_message = f"""
-Hello, I am ALGO VENTURE. I am here to help you.  
-"""
+hist = ""
+if "messages" in st.session_state:
+    for msg in st.session_state.messages:
+        hist += f"\n{msg['role']}: {msg['content']}"
 
+initial_message = f"Hello, I am ALGO VENTURE. I am here to help you."
+# hist += f"\nAssistant: {initial_message}"
 
 if "messages" not in st.session_state:
     st.session_state["messages"] = [{"role": "assistant", "content": initial_message}]
@@ -81,6 +87,10 @@ for msg in st.session_state.messages:
 if prompt := st.chat_input():
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.chat_message("user").write(prompt)
-    response = assistant.ask_query(prompt)
+    print(hist)
+    response = assistant.ask_query(prompt, hist)
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
+    # hist += f"\nUser: {prompt}"
+    # hist += f"\nAssistant: {response}"
+    # print(hist)
