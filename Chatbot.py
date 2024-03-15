@@ -15,11 +15,15 @@ class ShippingAssistant:
         self.path_to_docx = path_to_docx
         self.loader = Docx2txtLoader(path_to_docx)
         self.docs = self.loader.load()
-        #self.docs = filter_complex_metadata(self.docs)
-        self.text_splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=200)
+        # self.docs = filter_complex_metadata(self.docs)
+        self.text_splitter = RecursiveCharacterTextSplitter(
+            chunk_size=1000, chunk_overlap=200
+        )
         self.splits = self.text_splitter.split_documents(self.docs)
-        self.vectorstore = Chroma.from_documents(documents=self.splits, embedding=OpenAIEmbeddings())
-        
+        self.vectorstore = Chroma.from_documents(
+            documents=self.splits, embedding=OpenAIEmbeddings()
+        )
+
         self.mem = "Assistant: Hello, I am ALGO VENTURE. I am here to help you."
 
     def ask_query(self, query, hist):
@@ -57,11 +61,20 @@ class ShippingAssistant:
 
         # print(hist)
         return resp
-    
-    
+
+
 path_to_docx = "ALGO_VENTURE_FAQ.docx"
 
 assistant = ShippingAssistant(path_to_docx)
+
+hide_st_style = """
+            <style>
+            #MainMenu {visibility: hidden;}
+            footer {visibility: hidden;}
+            header {visibility: hidden;}
+            </style>
+            """
+st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # Streamlit UI code
 st.title("ALGO VENTURE Assistant")
