@@ -58,7 +58,7 @@ class ShippingAssistant:
 
 
 def open_whatsapp_chat(whatsapp_number):
-    whatsapp_link = f"https://wa.me/{whatsapp_number}"
+    whatsapp_link = f"https://api.whatsapp.com/send/?phone={whatsapp_number}&text=I%27m+interested+in+Algo+Venture+services&type=phone_number&app_absent=0"
     button_html = f'<a href="{whatsapp_link}" target="_blank"><button>Chat on WhatsApp</button></a>'
     st.markdown(button_html, unsafe_allow_html=True)
 
@@ -79,7 +79,7 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 # Streamlit UI code
 st.title("ALGO VENTURE Assistant")
 
-whatsapp_number = "1234567890"
+whatsapp_number = "6589264599"
 open_whatsapp_chat(whatsapp_number)
 
 hist = ""
