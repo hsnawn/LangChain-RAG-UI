@@ -94,3 +94,10 @@ if prompt := st.chat_input():
     response = assistant.ask_query(prompt, hist)
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
+
+link = 'https://example.com'  # Replace this with your desired link
+button_label = 'Chat on WhatsApp'
+
+if st.button(button_label):
+    st.markdown(f'<a href="{link}" target="_blank">{button_label}</a>', unsafe_allow_html=True)
+
