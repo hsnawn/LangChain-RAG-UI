@@ -1,13 +1,10 @@
-import pandas as pd
 import streamlit as st
 from langchain_community.document_loaders import Docx2txtLoader
 from langchain_community.vectorstores import Chroma
 from langchain_core.output_parsers import StrOutputParser
-from langchain_core.runnables import RunnablePassthrough
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
-from langchain_community.vectorstores.utils import filter_complex_metadata
 
 
 class ShippingAssistant:
@@ -15,7 +12,6 @@ class ShippingAssistant:
         self.path_to_docx = path_to_docx
         self.loader = Docx2txtLoader(path_to_docx)
         self.docs = self.loader.load()
-        # self.docs = filter_complex_metadata(self.docs)
         self.text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000, chunk_overlap=200
         )
@@ -29,10 +25,12 @@ class ShippingAssistant:
     def ask_query(self, query, hist):
         retriever = self.vectorstore.similarity_search(query)
         merged_content = "\n".join([doc.page_content for doc in retriever[:2]])
-        # print(merged_content)
-        # self.mem = f"Assistant: Hello {carrier_name}, We’re pleased to inform you that you are the winning bidder on {shipment_id} from {departure_city} to {destination_city} picking etc etc"
+        
         rag_template = """
-        You are ALGO VENTURE assistant. Use the following pieces of context to answer the question. If you don't know the answer, just refuse to answer it.and reply to greetings. Use three sentences maximum and keep the answer concise.
+        You are ALGO VENTURE assistant. Use the following pieces of context to answer the question.
+        If you don't know the answer, just refuse to answer it.
+        Use three sentences maximum and keep the answer concise.
+        Reply to greetings and refuse to answer irrelevant questions.
         CONTEXT:
         ```
             {docs}
@@ -56,10 +54,6 @@ class ShippingAssistant:
         rag_chain = prompt | llm | StrOutputParser()
 
         resp = rag_chain.invoke({"query": f"{query}"})
-        # hist = self.mem + f"\nUser: {query}"
-        # hist += f"\nAssistant: {resp}"
-
-        # print(hist)
         return resp
 
 
@@ -78,10 +72,6 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # Streamlit UI code
 st.title("ALGO VENTURE Assistant")
-
-# with st.sidebar:
-#     name = st.text_input("Your Name", key="name", type="default")
-#     company_name = st.text_input("Company Name", key="company", type="default")
 
 hist = ""
 if "messages" in st.session_state:
@@ -104,6 +94,3 @@ if prompt := st.chat_input():
     response = assistant.ask_query(prompt, hist)
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
-    # hist += f"\nUser: {prompt}"
-    # hist += f"\nAssistant: {response}"
-    # print(hist)

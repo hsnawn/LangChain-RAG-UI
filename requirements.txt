@@ -3,4 +3,4 @@ langchain-community
 langchain-openai
 streamlit
 docx2txt
-chromadb
+chromadb==0.3.29
