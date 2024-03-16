@@ -57,6 +57,12 @@ class ShippingAssistant:
         return resp
 
 
+def open_whatsapp_chat(whatsapp_number):
+    whatsapp_link = f"https://wa.me/{whatsapp_number}"
+    button_html = f'<a href="{whatsapp_link}" target="_blank"><button>Chat on WhatsApp</button></a>'
+    st.markdown(button_html, unsafe_allow_html=True)
+
+
 path_to_docx = "ALGO_VENTURE_FAQ.docx"
 
 assistant = ShippingAssistant(path_to_docx)
@@ -72,6 +78,9 @@ st.markdown(hide_st_style, unsafe_allow_html=True)
 
 # Streamlit UI code
 st.title("ALGO VENTURE Assistant")
+
+whatsapp_number = "1234567890"
+open_whatsapp_chat(whatsapp_number)
 
 hist = ""
 if "messages" in st.session_state:
@@ -94,10 +103,4 @@ if prompt := st.chat_input():
     response = assistant.ask_query(prompt, hist)
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.chat_message("assistant").write(response)
-
-link = 'https://example.com'  # Replace this with your desired link
-button_label = 'Chat on WhatsApp'
-
-if st.button(button_label):
-    st.markdown(f'<a href="{link}" target="_blank">{button_label}</a>', unsafe_allow_html=True)
 
