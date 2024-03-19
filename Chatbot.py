@@ -60,7 +60,7 @@ class ShippingAssistant:
 
 def write_to_google_sheets(name, phone_number, email):
     scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
-    creds=ServiceAccountCredentials.from_json_keyfile_name('steam-canto-417706-398b10a40597.json', scopes)
+    creds=ServiceAccountCredentials.from_json_keyfile_name('sheets.json', scopes)
     file=gspread.authorize(creds)
     workbook=file.open('Testaccess')
     sheet = workbook.sheet1
