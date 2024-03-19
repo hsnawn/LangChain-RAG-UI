@@ -14,7 +14,7 @@ from langchain.prompts import PromptTemplate
 class ShippingAssistant:
     def __init__(self, docx):
         self.docx = docx
-        for file in os.listdir(self.ocx):
+        for file in os.listdir(self.docx):
             self.loader = Docx2txtLoader(file)
             self.docs = self.loader.load()
             self.text_splitter = RecursiveCharacterTextSplitter(
