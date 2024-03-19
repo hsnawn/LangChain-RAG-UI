@@ -1,4 +1,5 @@
 import streamlit as st
+import os
 import gspread
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
@@ -11,17 +12,18 @@ from langchain.prompts import PromptTemplate
 
 
 class ShippingAssistant:
-    def __init__(self, path_to_docx):
-        self.path_to_docx = path_to_docx
-        self.loader = Docx2txtLoader(path_to_docx)
-        self.docs = self.loader.load()
-        self.text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000, chunk_overlap=200
-        )
-        self.splits = self.text_splitter.split_documents(self.docs)
-        self.vectorstore = Chroma.from_documents(
-            documents=self.splits, embedding=OpenAIEmbeddings()
-        )
+    def __init__(self, docx):
+        self.docx = docx
+        for file in os.listdir(self.ocx):
+            self.loader = Docx2txtLoader(file)
+            self.docs = self.loader.load()
+            self.text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=1000, chunk_overlap=200
+            )
+            self.splits = self.text_splitter.split_documents(self.docs)
+            self.vectorstore = Chroma.from_documents(
+                documents=self.splits, embedding=OpenAIEmbeddings()
+            )
 
         self.mem = "Assistant: Hello, I am ALGO VENTURE. I am here to help you."
 
@@ -64,7 +66,7 @@ def write_to_google_sheets(time, name, phone_number, email):
     scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
     creds=ServiceAccountCredentials.from_json_keyfile_name('sheets.json', scopes)
     file=gspread.authorize(creds)
-    workbook=file.open('Testaccess')
+    workbook=file.open('Lead Coolectionsheet')
     sheet = workbook.sheet1
     sheet.append_row([time, name, phone_number, email])
 
@@ -73,10 +75,13 @@ def open_whatsapp_chat(whatsapp_number):
     button_html = f'<a href="{whatsapp_link}" target="_blank"><button>Chat on WhatsApp</button></a>'
     st.markdown(button_html, unsafe_allow_html=True)
 
+docx =[]
+path_to_docx_folder = "KnowledgeBase"
+for docx_file in os.listdir(path_to_docx_folder):
+    if docx_file.endswith(".docx"):
+        docx.append(os.path.join(path_to_docx_folder, docx_file))
 
-path_to_docx = "ALGO_VENTURE_FAQ.docx"
-
-assistant = ShippingAssistant(path_to_docx)
+assistant = ShippingAssistant(docx)
 
 hide_st_style = """
             <style>
