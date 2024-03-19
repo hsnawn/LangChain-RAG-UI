@@ -1,5 +1,6 @@
 import streamlit as st
 import gspread
+from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
 from langchain_community.document_loaders import Docx2txtLoader
 from langchain_community.vectorstores import Chroma
@@ -58,13 +59,13 @@ class ShippingAssistant:
         resp = rag_chain.invoke({"query": f"{query}"})
         return resp
 
-def write_to_google_sheets(name, phone_number, email):
+def write_to_google_sheets(time, name, phone_number, email):
     scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
     creds=ServiceAccountCredentials.from_json_keyfile_name('sheets.json', scopes)
     file=gspread.authorize(creds)
     workbook=file.open('Testaccess')
     sheet = workbook.sheet1
-    sheet.append_row([name, phone_number, email])
+    sheet.append_row([time, name, phone_number, email])
 
 def open_whatsapp_chat(whatsapp_number):
     whatsapp_link = f"https://api.whatsapp.com/send/?phone={whatsapp_number}&text=I%27m+interested+in+Algo+Venture+services&type=phone_number&app_absent=0"
@@ -104,7 +105,9 @@ def show_user_info_form():
     if submit_button:
         # Process the submitted information (e.g., store in session_state)
         st.session_state.user_info = {"name": name, "phone_number": phone_number, "email": email}
-        write_to_google_sheets(name, phone_number, email)
+        current_datetime = datetime.now()
+        current_datetime = current_datetime.strftime("%Y-%m-%d %H:%M:%S")
+        write_to_google_sheets(current_datetime, name, phone_number, email)
         st.success("Information submitted successfully!")
         return True
     elif skip_button:
@@ -144,7 +147,7 @@ if "user_info" not in st.session_state or not st.session_state.user_info:
     chat_placeholder = st.empty()
     # Show user information input form
     if show_user_info_form():
-        st.write("Moving to chat interface...")
+        # st.write("Moving to chat interface...")
         show_chat_interface()
 
     # Clear the placeholder if user info form is submitted
