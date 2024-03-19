@@ -55,6 +55,7 @@ class ShippingAssistant:
             input_variables=["query"],
             template=rag_template,
         )
+        print(merged_content)
         llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
         rag_chain = prompt | llm | StrOutputParser()
 
