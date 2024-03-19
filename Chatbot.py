@@ -81,33 +81,31 @@ st.title("ALGO VENTURE Assistant")
 
 whatsapp_number = "6589264599"
 open_whatsapp_chat(whatsapp_number)
+# hist = ''
 
-# st.warning("Please Enter your name and phone number to start chatting.")
-warning_msg = st.empty()
-name = st.empty()
-number = st.empty()
-submit = st.empty()
-cancel_input = st.empty()
-warning_show = warning_msg.warning("Please Enter your name and phone number to start chatting.")
+# Define the function to show the user information input form
 
-submit_pressed = submit.button("Submit")
-cancel_pressed = cancel_input.button("Skip")
-hist = ""
+def show_user_info_form():
+    name = st.text_input("Enter your name:")
+    phone_number = st.text_input("Enter your phone number:")
+    email = st.text_input("Enter your email address:")
+    submit_button = st.button("Submit")
+    skip_button = st.button("Skip")
 
-if not cancel_pressed and not submit_pressed:
-    # Perform your logic without requiring name and number inputs
+    if submit_button:
+        # Process the submitted information (e.g., store in session_state)
+        st.session_state.user_info = {"name": name, "phone_number": phone_number, "email": email}
+        st.success("Information submitted successfully!")
+        return True
+    elif skip_button:
+        st.session_state.user_info = {"name": "", "phone_number": "", "email": ""}
+        st.success("Skipping user information.")
+        return True
+    else:
+        return False
     
-    name.text_input("Name", key="name", type="default")
-    number.text_input("Phone Number", key="Number", type="default")
-
-elif cancel_pressed:
-    name.empty()
-    number.empty()
-
-    cancel_input.empty()
-    submit.empty()
-    warning_show.empty()
-    # st.success("Logic executed without name and number.")
+def show_chat_interface():
+    hist = ""  # Initialize hist variable
     if "messages" in st.session_state:
         for msg in st.session_state.messages:
             hist += f"\n{msg['role']}: {msg['content']}"
@@ -126,41 +124,28 @@ elif cancel_pressed:
     if prompt := st.chat_input():
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.chat_message("user").write(prompt)
-        print(hist)
+        print(hist)  # Consider removing this line unless necessary
         response = assistant.ask_query(prompt, hist)
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.chat_message("assistant").write(response)
 
+# Main Streamlit code
+if "user_info" not in st.session_state or not st.session_state.user_info:
+    chat_placeholder = st.empty()
+    # Show user information input form
+    if show_user_info_form():
+        st.write("Moving to chat interface...")
+        show_chat_interface()
 
-elif submit_pressed:
-    # Perform your logic with both name and number inputs
-    name.empty()
-    number.empty()
+    # Clear the placeholder if user info form is submitted
+    if "user_info" in st.session_state and st.session_state.user_info:
+        chat_placeholder.empty()
+        
+else:
+    # Create an empty placeholder for the chat interface
+    chat_placeholder = st.empty()
+    show_chat_interface()  # Show chat interface
 
-    cancel_input.empty()
-    submit.empty()
-    warning_show.empty()
-
-    # st.success(f"Name: {name}, Number: {number}")
-    if "messages" in st.session_state:
-        for msg in st.session_state.messages:
-            hist += f"\n{msg['role']}: {msg['content']}"
-
-    initial_message = f"Hello, I am ALGO VENTURE. I am here to help you."
-    # hist += f"\nAssistant: {initial_message}"
-
-    if "messages" not in st.session_state:
-        st.session_state["messages"] = [
-            {"role": "assistant", "content": initial_message}
-        ]
-
-    for msg in st.session_state.messages:
-        st.chat_message(msg["role"]).write(msg["content"])
-
-    if prompt := st.chat_input():
-        st.session_state.messages.append({"role": "user", "content": prompt})
-        st.chat_message("user").write(prompt)
-        print(hist)
-        response = assistant.ask_query(prompt, hist)
-        st.session_state.messages.append({"role": "assistant", "content": response})
-        st.chat_message("assistant").write(response)
+    # Clear the placeholder if user info form is submitted
+    if "user_info" in st.session_state and st.session_state.user_info:
+        chat_placeholder.empty()
