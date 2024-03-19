@@ -3,4 +3,7 @@ langchain-community
 langchain-openai
 streamlit
 docx2txt
-chromadb==0.3.29
+chromadb
+gspread
+oauth2client
+pyopenssl
