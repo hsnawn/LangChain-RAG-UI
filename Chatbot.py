@@ -201,7 +201,6 @@
 #     if "user_info" in st.session_state and st.session_state.user_info:
 #         chat_placeholder.empty()
 
-
 import streamlit as st
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
@@ -229,12 +228,10 @@ header {visibility: hidden;}
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-# Initialize ShippingAssistant object only once
-
-if "assistant_initialized" not in st.session_state:
+# Initialize ShippingAssistant object only once using global variable
+if "assistant" not in globals():
     from internals.shipping_assistant import ShippingAssistant
-    st.session_state.assistant = ShippingAssistant()
-    st.session_state.assistant_initialized = True
+    assistant = ShippingAssistant()
 
 # Streamlit UI code
 st.title("ALGO VENTURE Assistant")
@@ -279,7 +276,7 @@ def show_chat_interface():
     if prompt := st.chat_input():
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.chat_message("user").write(prompt)
-        response = st.session_state.assistant.ask_query(prompt, hist)
+        response = assistant.ask_query(prompt, hist)
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.chat_message("assistant").write(response)
 
