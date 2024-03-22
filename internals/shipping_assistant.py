@@ -10,30 +10,9 @@ from langchain.globals import set_debug
 
 class ShippingAssistant:
     def __init__(self):
-        self.docx =[]
-        self.path_to_docx_folder = "KnowledgeBase"
-
-        print("###################### Hello From INIT ######################")
-        print("Docs Count: ",os.listdir(self.path_to_docx_folder))
-        for docx_file in os.listdir(self.path_to_docx_folder):
-            if docx_file.endswith(".docx"):
-                self.docx.append(os.path.join(self.path_to_docx_folder, docx_file))
-                print("docx: ", os.path.join(self.path_to_docx_folder, docx_file))
-        print("DOCX: ",self.docx)
-
-        for file in self.docx:
-            self.loader = Docx2txtLoader(file)
-            self.docs = self.loader.load()
-            self.text_splitter = RecursiveCharacterTextSplitter(
-                chunk_size=1000, chunk_overlap=200
-            )
-            self.splits = self.text_splitter.split_documents(self.docs)
-            print(len(self.splits))
-            # print(self.splits)
-            self.vectorstore = Chroma.from_documents(
-                documents=self.splits, embedding=OpenAIEmbeddings()
-            )
-            self.vectorstore.persist()
+        
+            self.vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=OpenAIEmbeddings())
+            # self.vectorstore.persist()
             self.retriever = self.vectorstore.as_retriever(k=4)
 
             
