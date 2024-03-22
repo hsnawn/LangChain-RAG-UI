@@ -7,13 +7,13 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
 from langchain.globals import set_debug
-import chromadb.utils.embedding_functions as embedding_functions
+# import chromadb.utils.embedding_functions as embedding_functions
 
-openai_api_key = os.environ.get('OPENAI_API_KEY')
-openai_ef = embedding_functions.OpenAIEmbeddingFunction(
-                api_key=openai_api_key,
-                model_name="text-embedding-3-small",
-            )
+# openai_api_key = os.environ.get('OPENAI_API_KEY')
+# openai_ef = embedding_functions.OpenAIEmbeddingFunction(
+#                 api_key=openai_api_key,
+#                 model_name="text-embedding-3-small",
+#             )
 
 docx =[]
 path_to_docx_folder = "KnowledgeBase"
@@ -35,4 +35,6 @@ for file in docx:
     splits = text_splitter.split_documents(docs)
     print(len(splits))
     # print(splits)
-    Chroma.from_documents(docs, embedding_function=OpenAIEmbeddings(), persist_directory="./chroma_db")
+    openai_embeddings = OpenAIEmbeddings()
+    # Use Chroma.from_documents() with embedding_function parameter set once
+    Chroma.from_documents(docs, embedding_function=openai_embeddings, persist_directory="./chroma_db")
