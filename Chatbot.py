@@ -31,31 +31,30 @@ class ShippingAssistant:
         merged_content = "\n".join([doc.page_content for doc in retriever[:2]])
 
         rag_template = """
-        You are ALGO VENTURE assistant.
-        Use the following pieces of context to answer the question.
-        Use three sentences maximum and keep the answer concise.
-        Reply to greetings and refuse to answer off-topic questions.
+        YOUR ROLE:
+        You are an AI virtual assistant employed by ALGO VENTURE, responsible for assisting customers with their inquiries.
+        You are having conversation with a customer. 
+        
+        TASK:
+        Your primary task is to provide helpful guidance and address any concerns they may have.
+        To provide accurate support, please refer to the provided context.
+        
         CONTEXT:
         ```
-            {docs}
+        {docs}
         ```
         PREVIOUS DISCUSSION:
-        ```
-            {history}
-        ```
-        QUERY:
-        ```
-            {query}
-        ```
-        ANSWER:
+        {history}
+        user: {query}
+        assistant:
         """
         prompt = PromptTemplate(
             partial_variables={"history": hist, "docs": merged_content},
             input_variables=["query"],
             template=rag_template,
         )
-        print(merged_content)
-        llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0)
+        # print(merged_content)
+        llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7)
         rag_chain = prompt | llm | StrOutputParser()
 
         resp = rag_chain.invoke({"query": f"{query}"})
