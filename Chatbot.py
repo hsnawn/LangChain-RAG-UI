@@ -205,7 +205,6 @@ import streamlit as st
 from datetime import datetime
 from oauth2client.service_account import ServiceAccountCredentials
 import gspread
-import os
 
 def write_to_google_sheets(time, name, phone_number, email):
     scopes=['https://www.googleapis.com/auth/spreadsheets', 'https://www.googleapis.com/auth/drive']
@@ -229,16 +228,10 @@ header {visibility: hidden;}
 """
 st.markdown(hide_st_style, unsafe_allow_html=True)
 
-# Check if assistant initialization flag exists
-assistant_initialized_flag_path = "assistant_initialized.flag"
-assistant_initialized = os.path.isfile(assistant_initialized_flag_path)
-
-if not assistant_initialized:
-    # Initialize ShippingAssistant object only once
+# Initialize ShippingAssistant object only once using global variable
+if "assistant" not in globals():
     from internals.shipping_assistant import ShippingAssistant
     assistant = ShippingAssistant()
-    # Create flag file to indicate assistant initialization
-    open(assistant_initialized_flag_path, 'a').close()
 
 # Streamlit UI code
 st.title("ALGO VENTURE Assistant")
@@ -299,4 +292,3 @@ else:
     show_chat_interface()
     if "user_info" in st.session_state and st.session_state.user_info:
         chat_placeholder.empty()
-

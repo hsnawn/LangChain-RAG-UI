@@ -33,6 +33,7 @@ class ShippingAssistant:
             self.vectorstore = Chroma.from_documents(
                 documents=self.splits, embedding=OpenAIEmbeddings()
             )
+            self.vectorstore.persist()
             self.retriever = self.vectorstore.as_retriever(k=4)
 
             
