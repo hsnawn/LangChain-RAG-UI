@@ -7,13 +7,20 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
 from langchain.globals import set_debug
+import chromadb.utils.embedding_functions as embedding_functions
+
 
 class ShippingAssistant:
     def __init__(self):
-        
-            self.vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=OpenAIEmbeddings())
+            print("***************************************INIT*****************************************")
+            self.openai_api_key = os.environ.get('OPENAI_API_KEY')
+            self.openai_ef = embedding_functions.OpenAIEmbeddingFunction(
+                            api_key=self.openai_api_key,
+                            model_name="text-embedding-3-small",
+                        )
+            self.vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=self.openai_ef)
             # self.vectorstore.persist()
-            self.retriever = self.vectorstore.as_retriever(k=4)
+            # self.retriever = self.vectorstore.as_retriever(k=4)
 
             
 
@@ -22,7 +29,7 @@ class ShippingAssistant:
     def ask_query(self, query, hist):
         # set_debug(True)
         # retriever = self.vectorstore.similarity_search(query)
-        docs = self.retriever.invoke(query)
+        docs = self.vectorstore.similarity_search(query)
         merged_content = "\n ###################### Next Chunk ###################### \n".join([doc.page_content for doc in docs])
         for doc in docs:
             print("**********************************************************************************")
