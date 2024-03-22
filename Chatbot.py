@@ -12,8 +12,16 @@ from langchain.prompts import PromptTemplate
 from langchain.globals import set_debug
 
 class ShippingAssistant:
-    def __init__(self, docx):
-        for file in docx:
+    def __init__(self):
+        self.docx =[]
+        self.path_to_docx_folder = "KnowledgeBase"
+        print(len(os.listdir(self.path_to_docx_folder)))
+        for docx_file in os.listdir(self.path_to_docx_folder):
+            if docx_file.endswith(".docx"):
+                self.docx.append(os.path.join(self.path_to_docx_folder, docx_file))
+                print("docx: ", os.path.join(self.path_to_docx_folder, docx_file))
+        print("DOCX: ",self.docx)        
+        for file in self.docx:
             self.loader = Docx2txtLoader(file)
             self.docs = self.loader.load()
             self.text_splitter = RecursiveCharacterTextSplitter(
@@ -24,6 +32,8 @@ class ShippingAssistant:
                 documents=self.splits, embedding=OpenAIEmbeddings()
             )
             self.retriever = self.vectorstore.as_retriever(k=4)
+
+            
 
         self.mem = "Assistant: Hello, I am ALGO VENTURE. I am here to help you."
 
@@ -78,16 +88,7 @@ def open_whatsapp_chat(whatsapp_number):
     button_html = f'<a href="{whatsapp_link}" target="_blank"><button>Chat on WhatsApp</button></a>'
     st.markdown(button_html, unsafe_allow_html=True)
 
-docx =[]
-path_to_docx_folder = "KnowledgeBase"
-print(len(os.listdir(path_to_docx_folder)))
-for docx_file in os.listdir(path_to_docx_folder):
-    if docx_file.endswith(".docx"):
-        docx.append(os.path.join(path_to_docx_folder, docx_file))
-
-        print("docx: ", os.path.join(path_to_docx_folder, docx_file))
-
-assistant = ShippingAssistant(docx)
+assistant = ShippingAssistant()
 
 hide_st_style = """
             <style>
