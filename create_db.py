@@ -35,4 +35,4 @@ for file in docx:
     splits = text_splitter.split_documents(docs)
     print(len(splits))
     # print(splits)
-    Chroma.from_documents(docs, embedding_function=openai_ef, persist_directory="./chroma_db")
+    Chroma.from_documents(docs, embedding_function=OpenAIEmbeddings(), persist_directory="./chroma_db")
