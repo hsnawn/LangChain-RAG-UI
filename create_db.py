@@ -7,6 +7,8 @@ from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
 from langchain.globals import set_debug
+from langchain_community.vectorstores import FAISS
+
 # import chromadb.utils.embedding_functions as embedding_functions
 
 # openai_api_key = os.environ.get('OPENAI_API_KEY')
@@ -42,4 +44,8 @@ for file in docx:
     except TypeError as e:
         print("Error during Chroma instantiation:", e)
     # Use Chroma.from_documents() with embedding_function parameter set once
-    Chroma.from_documents(docs, embedding_function=openai_embeddings, persist_directory="./chroma_db")
+    db = FAISS.from_documents(docs, OpenAIEmbeddings())
+
+query = "I want to bring my own broker"
+docs = db.similarity_search(query)
+print(docs[0].page_content)
