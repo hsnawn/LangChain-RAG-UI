@@ -23,13 +23,15 @@ class ShippingAssistant:
             self.vectorstore = Chroma.from_documents(
                 documents=self.splits, embedding=OpenAIEmbeddings()
             )
+            self.retriever = self.vectorstore.as_retriever(k=4)
 
         self.mem = "Assistant: Hello, I am ALGO VENTURE. I am here to help you."
 
     def ask_query(self, query, hist):
         set_debug(True)
-        retriever = self.vectorstore.similarity_search(query)
-        merged_content = "\n".join([doc.page_content for doc in retriever[:2]])
+        # retriever = self.vectorstore.similarity_search(query)
+        docs = self.retriever.invoke(query)
+        merged_content = "\n".join([doc.page_content for doc in docs])
 
         rag_template = """
         YOUR ROLE:
