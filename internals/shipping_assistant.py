@@ -43,7 +43,7 @@ class ShippingAssistant:
         # set_debug(True)
         # retriever = self.vectorstore.similarity_search(query)
         docs = self.retriever.invoke(query)
-        merged_content = "\n".join([doc.page_content for doc in docs])
+        merged_content = "\n ###################### Next Chunk ###################### \n".join([doc.page_content for doc in docs])
         for doc in docs:
             print("**********************************************************************************")
             print(doc.page_content)
