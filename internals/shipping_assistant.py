@@ -18,7 +18,7 @@ class ShippingAssistant:
                             api_key=self.openai_api_key,
                             model_name="text-embedding-3-small",
                         )
-            self.vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=self.openai_ef)
+            self.vectorstore = Chroma(persist_directory="./chroma_db", embedding_function=OpenAIEmbeddings())
             # self.vectorstore.persist()
             # self.retriever = self.vectorstore.as_retriever(k=4)
 
