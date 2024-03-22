@@ -32,7 +32,7 @@ class ShippingAssistant:
         # retriever = self.vectorstore.similarity_search(query)
         docs = self.retriever.invoke(query)
         merged_content = "\n".join([doc.page_content for doc in docs])
-        print("merged_content: ", merged_content)
+        # print("merged_content: ", merged_content)
         rag_template = """
         YOUR ROLE:
         You are an AI virtual assistant employed by ALGO VENTURE, responsible for assisting customers with their inquiries.
@@ -83,6 +83,8 @@ path_to_docx_folder = "KnowledgeBase"
 for docx_file in os.listdir(path_to_docx_folder):
     if docx_file.endswith(".docx"):
         docx.append(os.path.join(path_to_docx_folder, docx_file))
+
+        print("docx: ", os.path.join(path_to_docx_folder, docx_file))
 
 assistant = ShippingAssistant(docx)
 
@@ -146,7 +148,7 @@ def show_chat_interface():
     if prompt := st.chat_input():
         st.session_state.messages.append({"role": "user", "content": prompt})
         st.chat_message("user").write(prompt)
-        print(hist)  # Consider removing this line unless necessary
+        # print(hist)  # Consider removing this line unless necessary
         response = assistant.ask_query(prompt, hist)
         st.session_state.messages.append({"role": "assistant", "content": response})
         st.chat_message("assistant").write(response)
