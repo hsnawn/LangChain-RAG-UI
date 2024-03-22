@@ -34,7 +34,12 @@ for file in docx:
     )
     splits = text_splitter.split_documents(docs)
     print(len(splits))
-    # print(splits)
+    # Create an instance of OpenAIEmbeddings
     openai_embeddings = OpenAIEmbeddings()
+    # Check if Chroma class instantiation is causing the issue
+    try:
+        chroma_instance = Chroma(embedding_function=openai_embeddings)
+    except TypeError as e:
+        print("Error during Chroma instantiation:", e)
     # Use Chroma.from_documents() with embedding_function parameter set once
     Chroma.from_documents(docs, embedding_function=openai_embeddings, persist_directory="./chroma_db")
