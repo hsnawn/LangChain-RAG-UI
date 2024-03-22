@@ -28,11 +28,11 @@ class ShippingAssistant:
         self.mem = "Assistant: Hello, I am ALGO VENTURE. I am here to help you."
 
     def ask_query(self, query, hist):
-        set_debug(True)
+        # set_debug(True)
         # retriever = self.vectorstore.similarity_search(query)
         docs = self.retriever.invoke(query)
         merged_content = "\n".join([doc.page_content for doc in docs])
-
+        print("merged_content: ", merged_content)
         rag_template = """
         YOUR ROLE:
         You are an AI virtual assistant employed by ALGO VENTURE, responsible for assisting customers with their inquiries.
@@ -41,6 +41,7 @@ class ShippingAssistant:
         TASK:
         Your primary task is to provide helpful guidance and address any concerns they may have.
         To provide accurate support, please refer to the provided context.
+        If you don't know the answer, just say that you don't know.
         
         CONTEXT:
         ```
