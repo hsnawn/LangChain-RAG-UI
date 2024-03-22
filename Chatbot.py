@@ -80,6 +80,7 @@ def open_whatsapp_chat(whatsapp_number):
 
 docx =[]
 path_to_docx_folder = "KnowledgeBase"
+print(len(os.listdir(path_to_docx_folder)))
 for docx_file in os.listdir(path_to_docx_folder):
     if docx_file.endswith(".docx"):
         docx.append(os.path.join(path_to_docx_folder, docx_file))
