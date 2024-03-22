@@ -9,7 +9,7 @@ from langchain_core.output_parsers import StrOutputParser
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain.prompts import PromptTemplate
-
+from langchain.globals import set_debug
 
 class ShippingAssistant:
     def __init__(self, docx):
@@ -27,6 +27,7 @@ class ShippingAssistant:
         self.mem = "Assistant: Hello, I am ALGO VENTURE. I am here to help you."
 
     def ask_query(self, query, hist):
+        set_debug(True)
         retriever = self.vectorstore.similarity_search(query)
         merged_content = "\n".join([doc.page_content for doc in retriever[:2]])
 
@@ -55,6 +56,7 @@ class ShippingAssistant:
         )
         # print(merged_content)
         llm = ChatOpenAI(model_name="gpt-3.5-turbo", temperature=0.7)
+        
         rag_chain = prompt | llm | StrOutputParser()
 
         resp = rag_chain.invoke({"query": f"{query}"})
